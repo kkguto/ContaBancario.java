@@ -47,16 +47,6 @@ public class Account {
 
     }
 
-    public String ShowAccountInfo(String password){
-        if(this.password.compareTo(password) == 0){
-
-            return "\nAccess allowed\n==========================\nAccount Holder: " + holder +
-                   "\nAmount: R$ " + String.format("%.2f", balance);
-        }
-
-        return "Access Denied";
-    }
-
     public String toString(){
         return  "\nAccount Holder: " + holder;
     }

@@ -42,6 +42,7 @@ public class FileManager {
     }
 
     public static void DeleteAccount(Account account, Scanner sc){
+ 
 
         System.out.print("Type the ID to Delete: ");
         String id = sc.next();
@@ -54,30 +55,31 @@ public class FileManager {
             
             if(password.compareTo(true_password) == 0){
                 String []ArrLine = new String[4];
-                File f_temp = new File(FILE_NAME_TEMP);
+
+                File new_file = new File(FILE_NAME_TEMP);
+                File old_file = new File(FILE_NAME);
+
                 try {
-                    BufferedReader br = new BufferedReader(new FileReader(FILE_NAME));
-                    BufferedWriter wr = new BufferedWriter(new FileWriter(f_temp));
+                    BufferedReader br = new BufferedReader(new FileReader(old_file));
+                    BufferedWriter wr = new BufferedWriter(new FileWriter(new_file));
                     String linha = br.readLine(); // Read the first line
         
                     while(linha != null){
                         ArrLine = linha.split(";");
                         if(ArrLine[0].compareTo(id) != 0){
                             wr.write(linha);
+                            wr.newLine();
                         }
                         linha = br.readLine(); // Read the next line
                     }
                     wr.close();
                     br.close();
         
-                    
-                    File main_file = new File(FILE_NAME);
-        
-                    if(!main_file.delete()){
+                    if(!old_file.delete()){
                         System.out.println("[ERRO] Failed to delete the old main file!");
                     }
         
-                    if(!f_temp.renameTo(main_file)){
+                    if(!new_file.renameTo(old_file)){
                         System.out.println("[ERRO] Failed to rename the new main file!");
                     }
         
@@ -87,6 +89,8 @@ public class FileManager {
             } else {
                 System.out.println("[ERRO] Wrong password! Try again later.");
             }
+        } else {
+            System.out.println("The ID " + id + " does not exists!");
         }
         
     }
@@ -100,8 +104,10 @@ public class FileManager {
             while(linha != null){
                 ArrLine = linha.split(";");
                 if(ArrLine[0].compareTo(Id_seach) == 0){
+                    br.close();
                     return ArrLine[2]; //Return the password
                 }
+                linha = br.readLine(); //Search next line 
             }
             
             br.close();
@@ -110,4 +116,42 @@ public class FileManager {
         }
         return null;
     }
+
+    public static String ShowAccountInfo(Account account, Scanner sc){
+        String []ArrLine = new String[4];
+
+        System.out.print("Type the ID to Delete: ");
+        String id = sc.next();
+
+        String true_password = VerifyID(account, id);
+        if(true_password != null){
+            System.out.print("Type the PassWord: ");
+            String password = sc.next();
+    
+            if(true_password.compareTo(password) == 0){
+                try{
+                    BufferedReader br = new BufferedReader(new FileReader(FILE_NAME));
+                    String linha = br.readLine();
+        
+                    while(linha != null){
+                        ArrLine = linha.split(";");
+                        if(ArrLine[0].compareTo(id) == 0){
+                            br.close();
+                            return "\nAccess allowed\n==========================\nAccount Holder: " + ArrLine[1] +
+                                   "\nAmount: R$ " + ArrLine[3] + "\nPassword: " + ArrLine[2];  //Return the Datas
+                        }
+                    }
+                    
+                    br.close();
+                }catch (IOException erro) {
+                    System.out.println("[ERRO] Failed to inicialize the File: " + erro.getMessage());
+                }   
+            }
+        }else{
+            System.out.println("The ID " + id + " does not exists!");
+        }
+
+        return "Access Denied!";
+    }
+
 }

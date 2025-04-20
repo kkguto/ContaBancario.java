@@ -2,12 +2,15 @@ package application;
 
 import entities.Account;
 import java.util.Scanner;
+import services.FileManager;
 
 public class App {
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
         int escolha;
         Account account = null;
+
+        FileManager.InitFile();
 
         do{
             Menu();
@@ -16,6 +19,7 @@ public class App {
             switch (escolha) {
                 case 1:
                     account = CreateAccount(sc);
+                    FileManager.AddAccount(account);
                     break;
                 case 2:
                     if (account == null) {
@@ -41,19 +45,12 @@ public class App {
                     break;
 
                 case 4:
-                    
+                    FileManager.DeleteAccount(account, sc);
                     break;
 
                 case 5:
-                    if (account == null) {
-                        System.out.println("No account created yet!");
-                        break;
-                    }
-
-                    System.out.print("Type the PassWord: ");
-                    password = sc.next();
-
-                    System.out.println(account.ShowAccountInfo(password));
+                    String ac = FileManager.ShowAccountInfo(account, sc);
+                    System.out.println(ac);
                     break;
                 case 6:
                     System.out.println("App closed!");
