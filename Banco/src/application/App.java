@@ -39,7 +39,12 @@ public class App {
 
                     account.DepositMoney(amount);
                     break;
+
                 case 4:
+                    
+                    break;
+
+                case 5:
                     if (account == null) {
                         System.out.println("No account created yet!");
                         break;
@@ -50,7 +55,7 @@ public class App {
 
                     System.out.println(account.ShowAccountInfo(password));
                     break;
-                case 5:
+                case 6:
                     System.out.println("App closed!");
                     sc.close();
                     break;                    
@@ -58,7 +63,7 @@ public class App {
                     System.out.println("[ERRO] Option Invalid! Try Again.");
                     break;
             }
-        }while(escolha != 5);
+        }while(escolha != 6);
 
         
     }
@@ -79,8 +84,9 @@ public class App {
         System.out.println("[1] Create Account");
         System.out.println("[2] Withdraw Amount");
         System.out.println("[3] Deposit Amount");
-        System.out.println("[4] Show Account Information");
-        System.out.println("[5] Exit");
+        System.out.println("[4] Delete Account");
+        System.out.println("[5] Show Account Information");
+        System.out.println("[6] Exit");
         System.out.println("======================");
         System.out.print("Enter your choice: ");
     }   
