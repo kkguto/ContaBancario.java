@@ -1,6 +1,7 @@
 package entities;
 
 import java.util.Scanner;
+import services.FileManager;
 
 public class Account {
     private String holder;
@@ -20,31 +21,67 @@ public class Account {
     }
 
     //Methods
-    public void WithDrawMoney(String password, Scanner sc){
-        if(this.password.compareTo(password) == 0){ 
-            System.out.print("Type the amount you want to Withdraw: ");
-            double amount = sc.nextDouble();
+    public void WithDrawMoney(Scanner sc){
+        Account account = null;
+        
+        double amount;
+        boolean update = false;
+        System.out.print("Type the Account's ID: ");
+        String id = sc.next();
 
-            if(this.balance >= amount){
-                this.balance -= amount;
-                System.out.println("Amount successfully WithDraw!");
-            }else{
-                System.out.println("Insufficient funds!");
-            } 
+        String true_password = FileManager.VerifyID(account, id);
+
+        if(true_password != null){
+            System.out.print("Type the password: ");
+            String try_password = sc.next();
+
+            if(true_password.compareTo(try_password) == 0){
+                System.out.print("Type the amount to Withdraw: ");
+                amount = sc.nextDouble();
+
+                    update = FileManager.UpdateAccountAmount(account, -amount, id);
+                    
+                    if(update){
+                        System.out.println("Amount successfully WithDraw!");
+                    }else{
+                        System.out.println("Insufficient funds!");
+                    } 
+            }
         }else{
-            System.out.println("Wrong password!");
+            System.out.println("[ERRO] Wrong password! Try again later.");
         }
 
     }
 
-    public void DepositMoney(double value){
-        if(value > 0){
-            this.balance += value;
-            System.out.println("Amount successfully Deposited into Account!");
-        }else{
-            System.out.println("[ERRO] Deposit attempt with Negative Numbers! Try again with numbers greater than zero.\n");
-        }
+    public void DepositMoney(Scanner sc){
+        Account account = null;
+        
+        double amount;
+        boolean update = false;
+        System.out.print("Type the Account's ID: ");
+        String id = sc.next();
 
+        String true_password = FileManager.VerifyID(account, id);
+
+        if(true_password != null){
+            System.out.print("Type the password: ");
+            String try_password = sc.next();
+
+            if(true_password.compareTo(try_password) == 0){
+                System.out.print("Type the amount to Deposit Money: ");
+                amount = sc.nextDouble();
+
+                    update = FileManager.UpdateAccountAmount(account, amount, id);
+
+                    if(update){
+                        System.out.println("Amount successfully deposited!");
+                    }else{
+                        System.out.println("Insufficient funds!");
+                    } 
+            }
+        }else{
+            System.out.println("[ERRO] Wrong password! Try again later.");
+        }
     }
 
     public String toString(){

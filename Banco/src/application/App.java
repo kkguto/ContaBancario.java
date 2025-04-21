@@ -15,33 +15,18 @@ public class App {
         do{
             Menu();
             escolha = sc.nextInt();
-            String password = null;
+            
             switch (escolha) {
                 case 1:
                     account = CreateAccount(sc);
                     FileManager.AddAccount(account);
                     break;
                 case 2:
-                    if (account == null) {
-                        System.out.println("No account created yet!");
-                        break;
-                    }
-
-                    System.out.print("Type the PassWord: ");
-                    password = sc.next();
-
-                    account.WithDrawMoney(password, sc);
+                    account.WithDrawMoney(sc);
                     break;
+
                 case 3:
-                    if (account == null) {
-                        System.out.println("No account created yet!");
-                        break;
-                    }
-
-                    System.out.print("Type the amount you want to deposit: ");
-                    double amount = sc.nextDouble();
-
-                    account.DepositMoney(amount);
+                    account.DepositMoney(sc);
                     break;
 
                 case 4:
