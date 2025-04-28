@@ -165,8 +165,8 @@ public class FileManager {
         boolean update = false;
 
         try {
+            BufferedWriter wr = new BufferedWriter(new FileWriter(new_file)); 
             BufferedReader br = new BufferedReader(new FileReader(old_file));
-            BufferedWriter wr = new BufferedWriter(new FileWriter(new_file));
             String linha = br.readLine(); // Read the first line
 
             while(linha != null){
@@ -177,9 +177,11 @@ public class FileManager {
                     double new_balance =  current_balance + amount;
 
                     if(new_balance < 0){
+                        wr.close();
+                        new_file.delete(); //
                         return false;
                     }
-                        
+                       
                     String new_line = ArrLine[0] + ";" + ArrLine[1] + ";" + ArrLine[2] + ";" + new_balance;
                     wr.write(new_line);
 

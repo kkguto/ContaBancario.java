@@ -23,15 +23,15 @@ public class Account {
     //Methods
     public void WithDrawMoney(Scanner sc){
         Account account = null;
-        
         double amount;
         boolean update = false;
+
         System.out.print("Type the Account's ID: ");
         String id = sc.next();
 
-        String true_password = FileManager.VerifyID(account, id);
+        String true_password = FileManager.VerifyID(account, id); //Return the right password or null if the ID does not exist
 
-        if(true_password != null){
+        if(true_password != null){ //if the "true_password" is not NULL
             System.out.print("Type the password: ");
             String try_password = sc.next();
 
@@ -39,16 +39,19 @@ public class Account {
                 System.out.print("Type the amount to Withdraw: ");
                 amount = sc.nextDouble();
 
-                    update = FileManager.UpdateAccountAmount(account, -amount, id);
-                    
-                    if(update){
-                        System.out.println("Amount successfully WithDraw!");
-                    }else{
-                        System.out.println("Insufficient funds!");
-                    } 
+                update = FileManager.UpdateAccountAmount(account, -amount, id); //Retunr true ou false
+                
+                if(update){
+                    System.out.println("Amount successfully WithDraw!");
+                }else{
+                    System.out.println("Insufficient funds!");
+                }
+
+            }else{
+                System.out.println("[ERRO] Wrong password! Try again later.");
             }
         }else{
-            System.out.println("[ERRO] Wrong password! Try again later.");
+            System.out.println("[ERRO] This ID does not exist! Try again later.");
         }
 
     }
@@ -71,19 +74,24 @@ public class Account {
                 System.out.print("Type the amount to Deposit Money: ");
                 amount = sc.nextDouble();
 
-                    update = FileManager.UpdateAccountAmount(account, amount, id);
+                update = FileManager.UpdateAccountAmount(account, amount, id);
 
-                    if(update){
-                        System.out.println("Amount successfully deposited!");
-                    }else{
-                        System.out.println("Insufficient funds!");
-                    } 
+                if(update){
+                    System.out.println("Amount successfully deposited!");
+                }else{
+                    System.out.println("Insufficient funds!");
+                } 
+                
+            }else{
+                System.out.println("[ERRO] Wrong password! Try again later.");
             }
         }else{
-            System.out.println("[ERRO] Wrong password! Try again later.");
+            System.out.println("[ERRO] This ID does not exist! Try again later.");
         }
     }
 
+
+    @Override
     public String toString(){
         return  "\nAccount Holder: " + holder;
     }
