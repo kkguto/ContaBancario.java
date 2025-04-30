@@ -2,13 +2,14 @@ package services;
 
 import entities.Account;
 import java.io.*;
-import java.util.Random;
 import java.util.Scanner;
 
 public class FileManager {
 
     public static final String FILE_NAME = "accounts.csv";
     public static final String FILE_NAME_TEMP = "accounts_temp.csv";
+    public static Scanner sc = new Scanner(System.in);
+    public static Account account = new Account();
 
     public static void InitFile(){
         File f = new File(FILE_NAME);
@@ -24,117 +25,113 @@ public class FileManager {
         }
     }
 
+    public static Account CreateAccount(){
+
+        System.out.print("Type the CPF (XXX.XXX.XXX-YY): ");
+        String cpf = sc.next();
+
+        if(!Cpf.VerificationCpf(cpf)){
+            System.out.println("[ERRO] Invalid CPF - CPF does not exist!");
+            return null;
+        }
+
+        if(Cpf.SearchCpf(cpf)){
+            System.out.println("[ERRO] This CPF already exists in DataBase");
+            return null;
+        }
+
+        System.out.print("Type the name of Account Holder: ");
+        String holder = sc.next();
+        System.out.print("Type the PassWord: ");
+        String password = sc.next();
+        return new Account(holder, password, cpf);
+    }
+
     public static void AddAccount(Account account){
+        if(account != null){
+            try(BufferedWriter bw = new BufferedWriter (new FileWriter(FILE_NAME, true))) {
+    
+                bw.write(account.getCPF() + ";" + account.getHolder() + ";" + account.getPassword() + ";" + account.getBalance());
+                bw.newLine();
 
-        Random rand = new Random();
-        int id = rand.nextInt(1000);
-        
-        try {
-            BufferedWriter bw = new BufferedWriter (new FileWriter(FILE_NAME, true));
-
-            bw.write(id + ";" + account.getHolder() + ";" + account.getPassword() + ";" + account.getBalance());
-            bw.newLine();
-
-            bw.close();
-        } catch (IOException erro) {
-            System.out.println("[ERRO] Failed to inicialize the File: " + erro.getMessage());
+            } catch (IOException erro) {
+                System.out.println("[ERRO] Failed to inicialize the File: " + erro.getMessage());
+            }
         }
     }
 
-    public static void DeleteAccount(Account account, Scanner sc){
+    public static void DeleteAccount(){
 
-        System.out.print("Type the ID to Delete: ");
-        String id = sc.next();
+        System.out.print("Type the CPF account to Delete: ");
+        String cpf = sc.next();
 
-        String true_password = VerifyID(account, id);
+        String true_password = Cpf.GetPasswordByCpf(cpf);
 
         if(true_password != null){
             System.out.print("Type the password: ");
             String password = sc.next();
-            
-            if(password.compareTo(true_password) == 0){
-                String []ArrLine = new String[4];
+
+            if(password.equals(true_password)){
 
                 File new_file = new File(FILE_NAME_TEMP);
                 File old_file = new File(FILE_NAME);
 
-                try {
+                try (
                     BufferedReader br = new BufferedReader(new FileReader(old_file));
-                    BufferedWriter wr = new BufferedWriter(new FileWriter(new_file));
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(new_file))
+                ){
+                
                     String linha = br.readLine(); // Read the first line
         
                     while(linha != null){
-                        ArrLine = linha.split(";");
-                        if(ArrLine[0].compareTo(id) != 0){
-                            wr.write(linha);
-                            wr.newLine();
+                        String[] ArrLine = linha.split(";");
+                        if(!(ArrLine[0].equals(cpf))){
+                            bw.write(linha);
+                            bw.newLine();
                         }
                         linha = br.readLine(); // Read the next line
-                    }
-                    wr.close();
-                    br.close();
-        
-                    if(!old_file.delete()){
-                        System.out.println("[ERRO] Failed to delete the old main file!");
-                    }
-        
-                    if(!new_file.renameTo(old_file)){
-                        System.out.println("[ERRO] Failed to rename the new main file!");
                     }
         
                 } catch (IOException erro) {
                     System.out.println("[ERRO] Failed to inicialize the File: " + erro.getMessage());
-                } 
+                }
+
+                if (!old_file.delete()) {
+                    System.out.println("[ERRO] Could not delete the old file.");
+                    return;
+                }
+    
+                if (!new_file.renameTo(old_file)) {
+                    System.out.println("[ERRO] Could not rename the new file.");
+                    return;
+                }
+    
+
             } else {
                 System.out.println("[ERRO] Wrong password! Try again later.");
             }
         } else {
-            System.out.println("The ID " + id + " does not exists!");
-        } 
+            System.out.println("The CPF " + cpf + " does not exists!");
+        }  
     }
 
-    public static String VerifyID(Account account, String Id_seach){
-        String []ArrLine = new String[4];
-        try{
-            BufferedReader br = new BufferedReader(new FileReader(FILE_NAME));
-            String linha = br.readLine();
+    public static String ShowAccountInfo(){
+        System.out.print("Type the CPF: ");
+        String cpf = sc.next();
 
-            while(linha != null){
-                ArrLine = linha.split(";");
-                if(ArrLine[0].compareTo(Id_seach) == 0){
-                    br.close();
-                    return ArrLine[2]; //Return the password
-                }
-                linha = br.readLine(); //Search next line 
-            }
-            
-            br.close();
-        }catch (IOException erro) {
-            System.out.println("[ERRO] Failed to inicialize the File: " + erro.getMessage());
-        }
-        return null;
-    }
+        String true_password = Cpf.GetPasswordByCpf(cpf);
 
-    public static String ShowAccountInfo(Account account, Scanner sc){
-        String []ArrLine = new String[4];
-
-        System.out.print("Type the ID to Delete: ");
-        String id = sc.next();
-
-        String true_password = VerifyID(account, id);
         if(true_password != null){
             System.out.print("Type the PassWord: ");
             String password = sc.next();
     
-            if(true_password.compareTo(password) == 0){
-                try{
-                    BufferedReader br = new BufferedReader(new FileReader(FILE_NAME));
+            if(true_password.equals(password)){
+                try(BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))){
                     String linha = br.readLine();
         
                     while(linha != null){
-                        ArrLine = linha.split(";");
-                        if(ArrLine[0].compareTo(id) == 0){
-                            br.close();
+                        String []ArrLine = linha.split(";");
+                        if(ArrLine[0].equals(cpf)){
                             return  "\nAccess allowed\n==========================\nAccount ID: " + ArrLine[0] + 
                                     "\nAccount Holder: " + ArrLine[1] +
                                     "\nAmount: R$ " + ArrLine[3] + 
@@ -143,73 +140,124 @@ public class FileManager {
                         }
                         linha = br.readLine();
                     }
-                    
-                    br.close();
                 }catch (IOException erro) {
                     System.out.println("[ERRO] Failed to inicialize the File: " + erro.getMessage());
                 }   
             }
         }else{
-            System.out.println("The ID " + id + " does not exists!");
+            System.out.println("The CPF " + cpf + " does not exists!");
         }
 
         return "Access Denied!";
     }
     
-    public static boolean UpdateAccountAmount(Account account, double amount, String id){
-        String []ArrLine = new String[4];
+    public static void DepositOrWithdraw(int operationType){
+        double amount;
+        boolean update = false;
+        
+        System.out.print("Type the Account's CPF: ");
+        String cpf = sc.next();
+
+        String true_password = Cpf.GetPasswordByCpf(cpf);
+
+        if(true_password != null){
+            System.out.print("Type the password: ");
+            String try_password = sc.next();
+
+            if(try_password.equals(true_password)){
+
+                if(operationType == 1){
+                    System.out.print("Type the amount to Withdraw: ");
+                    amount = sc.nextDouble();
+
+                    if(amount > 0){
+                        update = FileManager.UpdateAccountAmount(-amount, cpf);    
+                    }else {
+                        System.out.println("[ERRO] Invalid amount. Amount to Withdraw must be greater than zero.");
+                    }
+
+                }else{
+                    System.out.print("Type the amount to Deposit Money: ");
+                    amount = sc.nextDouble();
+
+                    if(amount > 0){
+                        update = FileManager.UpdateAccountAmount(amount, cpf);    
+                    }else {
+                        System.out.println("[ERRO] Invalid amount. Deposit must be greater than zero.");
+                    }
+                
+                }
+
+                if(update){
+                    if(operationType == 1){
+                        System.out.println("Amount successfully WithDraw!");
+                    }else{
+                        System.out.println("Amount successfully deposited!");
+                    }
+                } else if (amount > 0) { 
+                    System.out.println("[ERRO] Operation failed. Check balance or try again.");
+                }
+            }else{
+                System.out.println("[ERRO] Wrong password! Try again later.");
+            }
+        }else{
+            System.out.println("[ERRO] This CPF does not exist! Try again later.");
+        }
+    }
+
+    public static boolean UpdateAccountAmount(double amount, String cpf){
+        boolean updated = false;
 
         File new_file = new File(FILE_NAME_TEMP);
         File old_file = new File(FILE_NAME);
 
-        boolean update = false;
+        double current_balance = Cpf.GetBalanceByCpf(cpf);
+        double new_balance = current_balance + amount;
 
-        try {
-            BufferedWriter wr = new BufferedWriter(new FileWriter(new_file)); 
-            BufferedReader br = new BufferedReader(new FileReader(old_file));
-            String linha = br.readLine(); // Read the first line
-
-            while(linha != null){
-                ArrLine = linha.split(";");
-
-                if(ArrLine[0].compareTo(id) == 0){
-                    double current_balance = Double.parseDouble(ArrLine[3]);
-                    double new_balance =  current_balance + amount;
-
-                    if(new_balance < 0){
-                        wr.close();
-                        new_file.delete(); //
-                        return false;
-                    }
-                       
-                    String new_line = ArrLine[0] + ";" + ArrLine[1] + ";" + ArrLine[2] + ";" + new_balance;
-                    wr.write(new_line);
-
-                    update = true;
-
-                }else{
-                    wr.write(linha);
-                }
-
-                wr.newLine();
-                linha = br.readLine(); // Read the next line
-            }
-            wr.close();
-            br.close();
-
-            if(!old_file.delete()){
-                System.out.println("[ERRO] Failed to delete the old main file!");
-            }
-
-            if(!new_file.renameTo(old_file)){
-                System.out.println("[ERRO] Failed to rename the new main file!");
-            }
-
-        } catch (IOException erro) {
-            System.out.println("[ERRO] Failed to inicialize the File: " + erro.getMessage());
+        if (new_balance < 0) {
+            System.out.println("[ERRO] Insufficient funds.");
+            return updated;
         }
 
-        return update;
+        try (
+            BufferedReader br = new BufferedReader(new FileReader(old_file));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new_file))
+        ) {
+            String line;
+            while ((line = br.readLine()) != null) {
+
+                String[] fields = line.split(";");
+                if (fields.length < 4) continue;
+    
+                if (fields[0].equals(cpf)) {
+
+                    String new_line = fields[0] + ";" + fields[1] + ";" + fields[2] + ";" + new_balance;
+                    bw.write(new_line);
+                    updated = true;
+                } else {
+                    bw.write(line);
+                }
+                bw.newLine();
+            }
+    
+        } catch (IOException e) {
+            System.out.println("[ERRO] Error during update: " + e.getMessage());
+            return false;
+        }
+
+        // Agora, fecha garantidamente os arquivos e faz a substituição
+        if (!old_file.delete()) {
+            System.out.println("[ERRO] Could not delete old file.");
+            return false;
+        }
+    
+        if (!new_file.renameTo(old_file)) {
+            System.out.println("[ERRO] Could not rename temporary file.");
+            return false;
+        }
+    
+        return updated;
 
     }
+
 }

@@ -1,99 +1,33 @@
 package entities;
 
-import java.util.Scanner;
-import services.FileManager;
-
 public class Account {
     private String holder;
     private String password;
+    private String cpf;
     private double balance;
 
     //Constructor
     public Account(){
         this.holder = "No named";
+        this.cpf = "";
         this.password = "";
         this.balance = 0.0;
     }
 
-    public Account(String n, String p){
+    public Account(String n, String p, String cpf){
         this.holder = n;
         this.password = p;
+        this.cpf = cpf;
+        this.balance = 0.0;
     }
 
     //Methods
-    public void WithDrawMoney(Scanner sc){
-        Account account = null;
-        double amount;
-        boolean update = false;
-
-        System.out.print("Type the Account's ID: ");
-        String id = sc.next();
-
-        String true_password = FileManager.VerifyID(account, id); //Return the right password or null if the ID does not exist
-
-        if(true_password != null){ //if the "true_password" is not NULL
-            System.out.print("Type the password: ");
-            String try_password = sc.next();
-
-            if(true_password.compareTo(try_password) == 0){
-                System.out.print("Type the amount to Withdraw: ");
-                amount = sc.nextDouble();
-
-                update = FileManager.UpdateAccountAmount(account, -amount, id); //Retunr true ou false
-                
-                if(update){
-                    System.out.println("Amount successfully WithDraw!");
-                }else{
-                    System.out.println("Insufficient funds!");
-                }
-
-            }else{
-                System.out.println("[ERRO] Wrong password! Try again later.");
-            }
-        }else{
-            System.out.println("[ERRO] This ID does not exist! Try again later.");
-        }
-
-    }
-
-    public void DepositMoney(Scanner sc){
-        Account account = null;
-        
-        double amount;
-        boolean update = false;
-        System.out.print("Type the Account's ID: ");
-        String id = sc.next();
-
-        String true_password = FileManager.VerifyID(account, id);
-
-        if(true_password != null){
-            System.out.print("Type the password: ");
-            String try_password = sc.next();
-
-            if(true_password.compareTo(try_password) == 0){
-                System.out.print("Type the amount to Deposit Money: ");
-                amount = sc.nextDouble();
-
-                update = FileManager.UpdateAccountAmount(account, amount, id);
-
-                if(update){
-                    System.out.println("Amount successfully deposited!");
-                }else{
-                    System.out.println("Insufficient funds!");
-                } 
-                
-            }else{
-                System.out.println("[ERRO] Wrong password! Try again later.");
-            }
-        }else{
-            System.out.println("[ERRO] This ID does not exist! Try again later.");
-        }
-    }
-
 
     @Override
     public String toString(){
-        return  "\nAccount Holder: " + holder;
+        StringBuilder builder = new StringBuilder();
+        
+        return builder.toString();
     }
 
     //Getters and Setters
@@ -105,6 +39,15 @@ public class Account {
 
     public void setHolder(String h){
         this.holder = h;
+    }
+
+    //CPF
+    public String getCPF(){
+        return cpf;
+    }
+
+    public void setCPF(String cpf){
+        this.cpf = cpf;
     }
 
     //Password

@@ -1,6 +1,5 @@
 package application;
 
-import entities.Account;
 import java.util.Scanner;
 import services.FileManager;
 
@@ -8,7 +7,7 @@ public class App {
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
         int escolha;
-        Account account = new Account();
+
 
         FileManager.InitFile();
 
@@ -18,23 +17,22 @@ public class App {
             
             switch (escolha) {
                 case 1:
-                    account = CreateAccount(sc);
-                    FileManager.AddAccount(account);
+                    FileManager.AddAccount(FileManager.CreateAccount());
                     break;
                 case 2:
-                    account.WithDrawMoney(sc);
+                    FileManager.DepositOrWithdraw(1);
                     break;
 
                 case 3:
-                    account.DepositMoney(sc);
+                    FileManager.DepositOrWithdraw(2);
                     break;
 
                 case 4:
-                    FileManager.DeleteAccount(account, sc);
+                    FileManager.DeleteAccount();
                     break;
 
                 case 5:
-                    String ac = FileManager.ShowAccountInfo(account, sc);
+                    String ac = FileManager.ShowAccountInfo();
                     System.out.println(ac);
                     break;
                 case 6:
@@ -50,16 +48,6 @@ public class App {
         
     }
     
-    static Account CreateAccount(Scanner sc){
-        
-        System.out.print("Type the name of Account Holder: ");
-        String holder = sc.next();
-        System.out.print("Type the PassWord: ");
-        String password = sc.next();
-
-        return new Account(holder, password);
-    }
-
     static void Menu(){
         System.out.println("\n======== MENU ========");
         System.out.println("======================");
