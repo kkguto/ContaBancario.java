@@ -1,10 +1,9 @@
-package services;
+package br.com.descomplica;
 
-import entities.*;
 import java.io.*;
 import java.util.Scanner;
 
-public class FileManager {
+public class FileManager{
 
     public static final String FILE_NAME = "accounts.csv";
     public static final String FILE_NAME_TEMP = "accounts_temp.csv";

@@ -28,7 +28,7 @@ public class App {
                     break;
 
                 case 4:
-                    FileManager.DeleteAccount();
+                    FileManager.DeleteAccount("dsada");
                     break;
 
                 case 5:

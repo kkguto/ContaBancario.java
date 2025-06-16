@@ -1,4 +1,4 @@
-package entities;
+package br.com.descomplica;
 
 public class Account {
     private String holder, password, cpf;
@@ -20,13 +20,6 @@ public class Account {
     }
 
     //Methods
-
-    @Override
-    public String toString(){
-        StringBuilder builder = new StringBuilder();
-        
-        return builder.toString();
-    }
 
     //Getters and Setters
 
